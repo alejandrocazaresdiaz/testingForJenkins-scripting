@@ -1,0 +1,53 @@
+import groovy.json.*
+@Grab("org.yaml:snakeyaml:1.16")
+import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.DumperOptions
+
+
+pipeline {
+    agent any
+    
+    stages{
+        stage("test"){
+             steps{
+                action1()
+             }
+        }
+    }
+}
+def action1(){
+    
+    println "_________________________________OBJ to String (JSON and YAML format)_________________________________"
+    println "data type: obj:"
+    def obj =  [target:[[
+          id:"2", name:"MINION", description:"Minion is a name of a brand demo for this example", location:"folderMinion/mn", 
+          majorVersion:"20",minorVersion:"0L", file: "log.txt"],
+          [
+          id:"3", name:"Avenger", description:"Avenger is a name of a brand demo for this example", location:"folderAvenger/av", 
+          majorVersion:"7",minorVersion:"0XL", file: "log.txt"]]
+    ]
+    println obj
+    
+    
+    println "data type: yaml from obj"
+    def option1 = new DumperOptions()
+    option1.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK)
+    def yamlStr = new Yaml(option1).dump(obj)
+    println yamlStr
+    
+    
+    println "data type: json from obj"
+    def jsonStr = new JsonBuilder( obj ).toPrettyString()
+    println jsonStr
+    
+    println "_________________________________String to Obj from (JSON and YAML format)_________________________________"
+    
+    println "String Yaml to Obj"
+    def objFromYaml = new Yaml().load(yamlStr)
+    println objFromYaml.target[0]
+    
+    println "String Json to Obj"
+    def objFromJson = new JsonSlurper().parseText(jsonStr);
+    println objFromJson.target[1]
+
+}
